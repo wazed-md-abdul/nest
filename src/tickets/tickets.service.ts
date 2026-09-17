@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Ticket } from './tickets.interface.js';
+import { CreateTicketDto } from './dto/create-ticket.dto.js';
 
 @Injectable()
 export class TicketsService {
@@ -63,14 +64,14 @@ export class TicketsService {
         }
         return tickets;
     }
-    create(payload: any) {
+    create(createTicketDto: CreateTicketDto) {
         const id = this.tickets.length + 1;
         const ticket: Ticket = {
             id,
-            title: payload.title,
-            description: payload.description,
-            status: payload.status,
-            priority: payload.priority,
+            title: createTicketDto.subject,
+            description: createTicketDto.description,
+            status: createTicketDto.status,
+            priority: createTicketDto.priority,
             createdAt: new Date(),
         }
         this.tickets.push(ticket);
