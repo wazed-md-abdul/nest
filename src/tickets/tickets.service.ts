@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Ticket } from './tickets.interface.js';
 
 @Injectable()
@@ -45,11 +45,36 @@ export class TicketsService {
             createdAt: new Date(),
         },
     ];
-    findAll() {
-        return this.tickets;
+    findAll(priority?: Ticket["priority"], status?: Ticket["status"]) {
+        let tickets = this.tickets;
+        if (priority) {
+            tickets = tickets.filter((ticket) => ticket.priority === priority);
+        }
+        if (status) {
+            tickets = tickets.filter((ticket) => ticket.status === status);
+        }
+        return tickets;
     }
 
     findOne(id: number) {
-        return this.tickets.find((ticket) => ticket.id === id);
+        const tickets = this.tickets.find((ticket) => ticket.id === id);
+        if (!tickets) {
+            throw new NotFoundException(`Ticket with Id ${id}  not found`)
+        }
+        return tickets;
+    }
+    create(payload: any) {
+        const id = this.tickets.length + 1;
+        const ticket: Ticket = {
+            id,
+            title: payload.title,
+            description: payload.description,
+            status: payload.status,
+            priority: payload.priority,
+            createdAt: new Date(),
+        }
+        this.tickets.push(ticket);
+        return ticket;
+
     }
 }
